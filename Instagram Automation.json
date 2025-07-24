@@ -1,0 +1,180 @@
+{
+  "name": "Instagram Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "=A breathtaking blend of British elegance and Indian tradition 🌸✨\nThis North West London venue came alive with a stunning mandap draped in florals, rich colors, and cultural magic.\nEvery detail, from the blooms to the backdrops, was designed to honor love, heritage, and celebration.\nDreaming of your own unforgettable shaadi moment? This is what #MandapGoals look like. 💫\n\n{{ $json.HashTags }}",
+        "options": {
+          "returnImageUrls": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        80,
+        -16
+      ],
+      "id": "dd926722-f48d-4171-bf4b-da6d61e70ef1",
+      "name": "Generate an image",
+      "credentials": {
+        "openAiApi": {
+          "id": "vldGcpwTdLrE62gH",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "acc16e17-b411-4834-852e-472d96b36373",
+              "name": "Caption",
+              "value": "💍 Dreaming of your perfect day? At Cavendish Banqueting, tradition meets elegance in North West London. Book your dream wedding now! 💫  #BritishIndianWedding #CavendishBanqueting #ShaadiVibes #LondonWeddings",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        -16
+      ],
+      "id": "1a1c6d0c-f0fa-4b42-86a4-e2f43c9dc9b9",
+      "name": "Manual Caption"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dc41648b-b771-4545-957b-33e3da2c27bf",
+              "name": "HashTags",
+              "value": "#BritishIndianWedding #LondonWeddingVenue #MandapGoals #ShaadiVibes #LuxuryMandap #DesiWeddingDecor #LondonWeddingPlanner #NorthWestLondon #BigFatIndianWedding #UKBrides",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        -16
+      ],
+      "id": "6694e620-ed11-43e8-8dc2-d17ae79c19c1",
+      "name": "Manual HashTags"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://1e8af7b11e78.ngrok-free.app/post",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "ngrok-skip-browser-warning",
+              "value": "ngrok-skip-browser-warning"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"username\": \"fcilondontest\",\n  \"password\": \"Rajesh@1234\",\n  \"caption\": \"{{ $json.Caption }}\",\n  \"image_url\": \"{{ $('Generate an image').item.json.url }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        -16
+      ],
+      "id": "6a696827-4181-4b6f-b883-c7656eb48c40",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        -16
+      ],
+      "id": "9f50067c-dfaf-445c-8bf3-6c00e809ae06",
+      "name": "Daily Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "Manual Caption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Caption": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual HashTags": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Manual HashTags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c2b83bf8-4cd9-4d08-ab72-3e848cc6703a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0173f3297206bbdde9e76e1f63fff6b1f6259f227a45a48a4f109de964e2b5c2"
+  },
+  "id": "hq6B4zYNyDSpNbBP",
+  "tags": []
+}
